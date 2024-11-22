@@ -6,16 +6,10 @@ import re
 import spacy
 from flask_cors import CORS
 import functools
-from spacy.tokens import Doc
 import requests
 import os
-import openai
-import contractions
-from spellchecker import SpellChecker
-from pprint import pprint
 import nltk
 from nltk.corpus import wordnet as wn
-import time
 import google.generativeai as genai
 
 application = Flask(__name__)
@@ -34,22 +28,11 @@ youtube = build('youtube', 'v3', developerKey=api_key)
 
 genai.configure(api_key="AIzaSyDD88fdydCXN21a9ALQbrqLw2YZAKkMpy4")
 
-@functools.lru_cache(maxsize=50)
-def sbert_embed_text(text):
-    return sbert_model.encode([text], convert_to_tensor=True)
-
-
 def extract_keywords(text):
     """Extract all lemmatized tokens from the text as keywords."""
     doc = nlp(text)
     keywords = [token.lemma_ for token in doc]  # Extract lemma for all tokens
     return keywords
-
-def get_video_id_from_url(url):
-    """Extract video ID from URL using regular expressions."""
-    regex = r"(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})"
-    matches = re.search(regex, url)
-    return matches.group(1) if matches else None
 
 def get_transcript(video_id):
     """Retrieve the transcript of a video using the YouTube Transcript API."""
@@ -227,7 +210,7 @@ def find_all_relevant_segments(segments, query):
 def query_batch(batch, query):
     def process_subbatch(subbatch):
         # Construct a prompt for the subbatch
-        prompt = f"Please review each segment carefully. For each one, decide if it contains information that answers or relates to the query '{query}'. Respond with '1: yes' if it does, '1: no' if it does not, followed by '2: yes/no', and so on for each segment. If it does, even partially or indirectly, please respond with 'yes'. If it definitely does not contain relevant information, respond with 'no'. Consider the broader context of the query when making your decision. Here are the segments:\n"
+        prompt = f"Please review each segment carefully. For each one, decide if it contains information that answers or relates to the query '{query}'. Respond with '1: yes' if it does, '1: no' if it does not, followed by '2: yes/no', and so on for each segment. Consider the broader context of the query when making your decision. Here are the segments:\n"
         prompt += '\n'.join([f"{idx + 1}: {seg['text']}" for idx, seg in enumerate(subbatch)])
         
         # Query the model for relevance

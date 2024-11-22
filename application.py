@@ -68,7 +68,7 @@ def process_video():
     data = request.get_json()
     video_id = data['video_id']
     user_query = data['query']
-    user_query = clean_query_with_gpt(user_query)
+    user_query = clean_query_with_gemini(user_query)
     print('User query : ', user_query)
     segments = process_video_function(video_id, user_query)
     
@@ -124,45 +124,15 @@ def enhance_query_universal(query):
 
     return ' '.join(sorted(enhanced_query_set))
 
-def query_gpt_model(prompt):
-    api_key = "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"  # Replace with your actual OpenAI API key
-    headers = {
-        'Authorization': f'Bearer {api_key}',
-        'Content-Type': 'application/json'
-    }
-    data = {
-        'model': "gpt-4o-mini",  # Ensure the model ID is correct
-        'messages': [{"role": "system", "content": prompt}]
-    }
-
-    try:
-        response = requests.post("https://api.openai.com/v1/chat/completions", json=data, headers=headers)
-        response.raise_for_status()
-        results = response.json()['choices']
-        relevancies = []
-        print("Results: ", results)
-        for result in results:
-            content = result['message']['content']
-            print("Full response content:", content)
-            # Parse each line for 'yes' to determine relevance
-            relevancies.extend(['yes' in line.split(': ')[1].strip().lower() for line in content.split('\n') if ':' in line])
-        return relevancies
-    except requests.RequestException as e:
-        print(f"Error in GPT API call: {e}")
-        return []
-
-
-genai.configure(api_key="AIzaSyDD88fdydCXN21a9ALQbrqLw2YZAKkMpy4")
-
 def query_gemini_model(prompt, model_name="gemini-1.5-flash"):
     try:
         # Initialize the model
         model = genai.GenerativeModel(model_name)
 
-        # Send content generation request
+        # Send the content generation request
         response = model.generate_content(prompt)
 
-        # Parse the response to mimic the relevancy extraction logic
+        # Parse the response to extract relevance
         lines = response.text.split('\n')
         relevancies = [
             'yes' in line.split(': ')[1].strip().lower()
@@ -178,29 +148,31 @@ def query_gemini_model(prompt, model_name="gemini-1.5-flash"):
         return []
 
 
-
-def clean_query_with_gpt(original_query):
-    api_key = "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"
-    headers = {
-        'Authorization': f'Bearer {api_key}',
-        'Content-Type': 'application/json'
-    }
-    data = {
-        'model': "gpt-4o-mini",
-        'messages': [{"role": "system", "content": f"Spell correct the query and return only the corrected query : {original_query} "}]
-    }
-
+def clean_query_with_gemini(original_query):
     try:
-        response = requests.post("https://api.openai.com/v1/chat/completions", json=data, headers=headers)
-        response.raise_for_status()
-        print("Enhance full query : ", response.json()['choices'][0])
-        refined_query = response.json()['choices'][0]['message']['content'].strip()
-        print("Refined Query:", refined_query)
-        return refined_query
-    except requests.RequestException as e:
-        print(f"Error in GPT API call: {e}")
-        return original_query  # Fallback to original query in case of an error
+        # Initialize the Gemini model
+        model = genai.GenerativeModel("gemini-1.5-flash")  # Replace with the correct Gemini model name if needed
 
+        # Create the prompt for the model
+        prompt = f"Spell correct the query and return only the corrected query: {original_query}"
+
+        # Send the content generation request
+        response = model.generate_content(prompt)
+
+        # Extract the corrected query from the response
+        if hasattr(response, 'text') and response.text.strip():
+            refined_query = response.text.strip()
+            print("Refined Query:", refined_query)
+            return refined_query
+        else:
+            print("Gemini response is empty or invalid.")
+            return original_query  # Fallback to original query
+
+    except Exception as e:
+        # Handle exceptions gracefully
+        print(f"Error in Gemini API call: {e}")
+        return original_query  # Fallback to original query in case of an error
+    
 
 def find_all_relevant_segments(segments, query):
     # Extract lemmatized words from the query
@@ -208,42 +180,46 @@ def find_all_relevant_segments(segments, query):
     query_doc = nlp(enhanced_query.lower())
     lemmatized_query_words = {token.lemma_ for token in query_doc if not token.is_stop and token.pos_ in ['NOUN', 'PROPN', 'VERB']}
     
-    # Initialize lists to collect all segments that potentially relate to the query
-    relevant_segments = []
-    original_query_matches = []
-    lemmatized_query_matches = []
+    # Preprocess segments once for efficiency
+    preprocessed_segments = [
+        {
+            'text': seg.get('text', '[No text available]'),
+            'lower_text': seg.get('text', '').lower(),
+            'start_time': seg.get('start_time', 0),  # Default to 0 if missing
+            'duration': seg.get('duration', 0),  # Default to 0 if missing
+        }
+        for seg in segments
+    ]
     
-    # Collect segments that match the original query words
-    for segment in segments:
-        segment_text = segment['text'].lower()
-        if any(word in segment_text for word in query.split()):
-            original_query_matches.append(segment)
+    # Collect matches based on the original query words
+    query_words = set(query.lower().split())
+    original_query_matches = [
+        seg for seg in preprocessed_segments if query_words.intersection(seg['lower_text'].split())
+    ]
     
-    # Collect segments that match the lemmatized query words
-    for segment in segments:
-        segment_text = segment['text'].lower()
-        if any(word in segment_text for word in lemmatized_query_words):
-            lemmatized_query_matches.append(segment)
+    # Collect matches based on the lemmatized query words
+    lemmatized_query_matches = [
+        seg for seg in preprocessed_segments if lemmatized_query_words.intersection(seg['lower_text'].split())
+    ]
 
     # Define threshold for outlier detection
-    threshold = 0.2 * len(segments)  # For example, more than 50% of segments is considered unusually high
-
-    # Append matches to the batch
+    threshold = 0.2 * len(segments)
+    
+    # Prepare the final batch
     batch = original_query_matches
     if len(lemmatized_query_matches) <= threshold:
-        batch.extend(lemmatized_query_matches)
+        batch.extend(seg for seg in lemmatized_query_matches if seg not in batch)
 
-    # Ensure there are always at least two segments to process
+    # Ensure there are at least two segments for processing
     if len(batch) == 1:
-        segment_index = segments.index(batch[0])
+        segment_index = next((i for i, seg in enumerate(preprocessed_segments) if seg == batch[0]), -1)
         if segment_index > 0:
-            batch.insert(0, segments[segment_index - 1])
-        elif segment_index < len(segments) - 1:
-            batch.append(segments[segment_index + 1])
-
-    # Process all collected segments in one batch if there are any
-    if batch:
-        relevant_segments.extend(query_batch(batch, query))
+            batch.insert(0, preprocessed_segments[segment_index - 1])
+        elif segment_index < len(preprocessed_segments) - 1:
+            batch.append(preprocessed_segments[segment_index + 1])
+    
+    # Process the batch for relevance
+    relevant_segments = query_batch(batch, query) if batch else []
     
     return relevant_segments
 
@@ -255,23 +231,21 @@ def query_batch(batch, query):
         prompt += '\n'.join([f"{idx + 1}: {seg['text']}" for idx, seg in enumerate(subbatch)])
         
         # Query the model for relevance
-        model_responses = query_gemini_model(prompt)  # This needs to be defined or replaced with actual call
+        model_responses = query_gemini_model(prompt)
         if model_responses:
-            # Filter segments based on model responses
-            for idx, seg in enumerate(subbatch):
-                if model_responses[idx]:  # Assuming model_responses aligns with subbatch order
-                    seg['similarity'] = 0.99  # Assign a high similarity score for relevant segments
-                else:
-                    seg['similarity'] = 0.01  # Assign a low similarity score for irrelevant segments
-            return [seg for seg in subbatch if seg['similarity'] > 0.5]  # Only return relevant segments
-        return []  # Return an empty list if no relevant segments are found or model call fails
+            return [
+                {**seg, 'similarity': 0.99} if model_responses[idx] else {**seg, 'similarity': 0.01}
+                for idx, seg in enumerate(subbatch)
+            ]
+        return []
 
-    # Split the batch into subbatches of 15
-    subbatches = [batch[i:i + 15] for i in range(0, len(batch), 15)]
+    # Divide the batch into subbatches and process them
     relevant_segments = []
-    for subbatch in subbatches:
-        print("Subbatch : ", subbatch)
-        relevant_segments.extend(process_subbatch(subbatch))
+    for i in range(0, len(batch), 15):  # Process in chunks of 15 to optimize prompt size
+        subbatch = batch[i:i + 15]
+        relevant_segments.extend([
+            seg for seg in process_subbatch(subbatch) if seg.get('similarity', 0) > 0.5
+        ])
 
     return relevant_segments
 

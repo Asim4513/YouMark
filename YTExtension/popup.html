@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Process YouTube Video</title>
+  <style>
+    /* Container styling */
+    body {
+      font-family: Arial, sans-serif;
+      padding: 10px;
+      margin: 0;
+      border: 3px solid #000000;  /* Thin border */
+      border-radius: 8px;
+      box-shadow: 0px 0px 8px 2px rgba(0, 0, 0, 0.1);  /* Light shadow */
+    }
+
+    h1 {
+      font-size: 20px;
+      margin-bottom: 15px;
+    }
+
+    input[type="text"] {
+      padding: 5px;
+      width: 200px;
+      margin-bottom: 5px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    /* Styling the small wait message */
+    #waitMessage {
+      font-size: 11px;
+      color: gray;
+      margin-bottom: 5px;
+    }
+
+    /* Button styling with adjusted spacing */
+    button {
+      padding: 7px 15px;
+      margin-left: 8px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    /* Style for dynamically created elements */
+    .progressBarContainer {
+      width: 100%;
+      background-color: #e0e0e0;
+      border-radius: 5px;
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
+
+    .progressBar {
+      width: 0%;  /* Initial width set to 0 */
+      height: 15px;
+      background-color: #4CAF50;
+      border-radius: 5px;
+      text-align: center;
+      line-height: 15px;  /* Align text vertically */
+      color: white;
+      font-size: 12px;
+    }
+
+    #doneMessage {
+      color: green;
+      font-weight: bold;
+    }
+
+    /* Update the #output styling to hide it initially */
+    #output {
+      margin-top: 10px;
+      font-size: 12px;
+      background-color: #f9f9f9;
+      border: 1px solid #ddd;
+      padding: 5px;
+      border-radius: 5px;
+      max-height: 150px;
+      overflow-y: auto;
+      display: none; /* Hide the #output initially */
+    }
+  </style>
+</head>
+<body>
+  <h1>YouMark</h1>
+  <input type="text" id="query" placeholder="Enter search query"><br>
+  <div id="waitMessage">Please wait for the AD to complete.</div> <!-- Small wait message -->
+
+  <button id="process">Process Video</button><br>
+  
+  <div id="doneMessage" style="display:none;">Done.</div>  <!-- Done message hidden by default -->
+  <div id="output"></div>
+  <script src="popup.js"></script>
+</body>
+</html>

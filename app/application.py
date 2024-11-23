@@ -7,6 +7,7 @@ import spacy
 from flask_cors import CORS
 import functools
 import requests
+from dotenv import load_dotenv
 import os
 import nltk
 from nltk.corpus import wordnet as wn
@@ -14,6 +15,8 @@ import google.generativeai as genai
 
 application = Flask(__name__)
 CORS(application)
+
+load_dotenv()
 
 @application.route('/')
 def home():
@@ -23,10 +26,10 @@ def home():
 nlp = spacy.load("en_core_web_sm")
 
 
-api_key = 'AIzaSyDHwb27elDP7jjr2Yqx98hKFMJi82SYiaY'
+api_key = os.getenv('YOUTUBE_API_KEY')
 youtube = build('youtube', 'v3', developerKey=api_key)
 
-genai.configure(api_key="AIzaSyDD88fdydCXN21a9ALQbrqLw2YZAKkMpy4")
+genai.configure(api_key=os.getenv('GENAI_API_KEY'))
 
 def extract_keywords(text):
     """Extract all lemmatized tokens from the text as keywords."""

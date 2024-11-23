@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Content Highlighter",
+  "name": "YouMark",
   "version": "1.0",
   "permissions": [
     "activeTab",

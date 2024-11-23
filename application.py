@@ -210,7 +210,7 @@ def find_all_relevant_segments(segments, query):
 def query_batch(batch, query):
     def process_subbatch(subbatch):
         # Construct a prompt for the subbatch
-        prompt = f"Please review each segment carefully. For each one, decide if it contains information that answers or relates to the query '{query}'. Respond with '1: yes' if it does, '1: no' if it does not, followed by '2: yes/no', and so on for each segment. Consider the broader context of the query when making your decision. Here are the segments:\n"
+        prompt = f"Please review each segment carefully. For each one, decide if it contains information that answers or relates to the query '{query}'. Respond with '1: yes' if it does, '1: no' if it does not, followed by '2: yes/no', and so on for each segment. If it does, even partially or indirectly, please respond with 'yes'. If it definitely does not contain relevant information, respond with 'no'. Consider the broader context of the query when making your decision. Here are the segments:\n"
         prompt += '\n'.join([f"{idx + 1}: {seg['text']}" for idx, seg in enumerate(subbatch)])
         
         # Query the model for relevance

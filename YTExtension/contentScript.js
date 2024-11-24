@@ -53,10 +53,12 @@
                 marker.className = 'custom-seek-marker';
                 marker.style.position = 'absolute';
                 marker.style.left = `${positionPercent}%`;
-                marker.style.width = '4px';
-                marker.style.height = '100%';
-                marker.style.backgroundColor = '#00FFFF';
-                marker.style.opacity = '0.7';
+                marker.style.width = '6px';
+                marker.style.height = '80%';
+                marker.style.borderRadius = '50%';
+                marker.style.background = 'linear-gradient(45deg, #FF4500, #FF6347)';
+                marker.style.boxShadow = '0px 0px 8px rgba(255, 99, 71, 0.8)';
+                marker.style.opacity = '0.9';
                 marker.style.zIndex = '1000';
 
                 // Append marker to the progress bar

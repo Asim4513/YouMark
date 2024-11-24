@@ -36,16 +36,23 @@
     /* Button styling with adjusted spacing */
     button {
       padding: 7px 15px;
-      margin-left: 8px;
       background-color: #4CAF50;
       color: white;
       border: none;
       border-radius: 5px;
       cursor: pointer;
+      margin-right: 8px; /* Space between buttons */
     }
 
     button:hover {
-      background-color: #45a049;
+        background-color: #45a049;
+    }
+
+  /* Ensure buttons are displayed inline */
+    #buttonContainer {
+        display: flex;
+        gap: 10px; 
+        margin-top: 10px;
     }
 
     /* Style for dynamically created elements */
@@ -92,7 +99,10 @@
   <input type="text" id="query" placeholder="Enter search query"><br>
   <div id="waitMessage">Please wait for the AD to complete.</div> <!-- Small wait message -->
 
-  <button id="process">Process Video</button><br>
+  <div id="buttonContainer">
+    <button id="process">Process Video</button>
+    <button id="clearHighlights">Clear</button>
+  </div>
   
   <div id="doneMessage" style="display:none;">Done.</div>  <!-- Done message hidden by default -->
   <div id="output"></div>

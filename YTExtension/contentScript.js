@@ -69,9 +69,22 @@
         }
     };
 
+    const clearMarkersFromPlayer = async () => {
+        try {
+            const progressBar = await waitForElement('.ytp-progress-bar');
+            const existingMarkers = progressBar.querySelectorAll('.custom-seek-marker');
+            existingMarkers.forEach(marker => marker.remove());
+            console.log("All markers cleared successfully.");
+        } catch (error) {
+            console.error("Error clearing markers:", error);
+        }
+    };
+
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         if (message.type === 'highlightSegments') {
             addMarkersToPlayer(message.segments);
+        } else if (message.type === 'clearHighlights') {
+            clearMarkersFromPlayer(); // Call function to remove all markers
         }
     });
 

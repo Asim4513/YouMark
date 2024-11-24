@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
     const processButton = document.getElementById('process');
+    const clearHighlightsButton = document.getElementById('clearHighlights');
     const doneMessage = document.getElementById('doneMessage');
     const output = document.getElementById('output');
 
@@ -80,6 +81,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 output.style.display = 'block';  // Show #output if no video ID is found
                 progressBarContainer.style.display = 'none';  // Hide progress bar if no video ID
             }
+        });
+    });
+    clearHighlightsButton.addEventListener('click', function () {
+        // Send a message to the content script to clear all highlights
+        chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+            chrome.tabs.sendMessage(tabs[0].id, { type: 'clearHighlights' });
         });
     });
 });

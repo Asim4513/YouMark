@@ -12,6 +12,8 @@ import os
 import nltk
 from nltk.corpus import wordnet as wn
 import google.generativeai as genai
+from langdetect import detect
+from googletrans import Translator
 
 application = Flask(__name__)
 CORS(application)
@@ -30,6 +32,24 @@ api_key = os.getenv('YOUTUBE_API_KEY')
 youtube = build('youtube', 'v3', developerKey=api_key)
 
 genai.configure(api_key=os.getenv('GENAI_API_KEY'))
+translator = Translator()
+
+def detect_language(text):
+    """Detect the language of the given text."""
+    try:
+        return detect(text)
+    except Exception as e:
+        print(f"Language detection failed: {e}")
+        return 'en'  # Default to English
+
+def translate_text(text, target_lang='en'):
+    """Translate text to the target language."""
+    try:
+        translated = translator.translate(text, dest=target_lang)
+        return translated.text
+    except Exception as e:
+        print(f"Translation failed: {e}")
+        return text
 
 def extract_keywords(text):
     """Extract all lemmatized tokens from the text as keywords."""
@@ -40,13 +60,25 @@ def extract_keywords(text):
 def get_transcript(video_id):
     """Retrieve the transcript of a video using the YouTube Transcript API."""
     try:
-        transcript = YouTubeTranscriptApi.get_transcript(video_id)
+        # Attempt to fetch the English transcript first
+        transcript = YouTubeTranscriptApi.get_transcript(video_id, languages=['en'])
         return transcript
-    except TranscriptsDisabled:
-        return "Transcript not available for this video."
     except Exception as e:
-        print(f"Failed to fetch transcript: {e}")
-        return "Failed to fetch transcript."
+        print(f"English transcript not available: {e}")
+        try:
+            # List all available transcripts
+            transcript_list = YouTubeTranscriptApi.list_transcripts(video_id)
+            for transcript in transcript_list:
+                if transcript.language_code == 'es':  # Prioritize Spanish if available
+                    print("Fetching Spanish transcript (auto-generated)...")
+                    return transcript.fetch()
+                elif transcript.is_generated:  # Fetch any auto-generated transcript
+                    print(f"Fetching auto-generated transcript in {transcript.language}.")
+                    return transcript.fetch()
+        except Exception as fallback_error:
+            print(f"Failed to fetch any transcript: {fallback_error}")
+            return "Transcript not available for this video."
+
 
 
 @application.route('/process_video', methods=['POST'])
@@ -247,28 +279,56 @@ def get_segments():
 
 
 def process_video_function(video_id, user_query):
+    relevant_segments = []  # Initialize to avoid UnboundLocalError
+
     transcript = get_transcript(video_id)
-    if not isinstance(transcript, str):
-        segments = segment_transcript(transcript)
-        keywords = extract_keywords(user_query)
-        search_query = ' '.join(keywords)
+    if isinstance(transcript, str) and "Failed" in transcript:
+        # Log the failure and return an empty result
+        print(f"Failed to fetch transcript: {transcript}")
+        return relevant_segments
 
-        # Only find relevant segments if the transcript is successfully segmented
-        relevant_segments = find_all_relevant_segments(segments, search_query)
-        relevant_segments = sorted(relevant_segments, key=lambda x: x.get('similarity', 0), reverse=True)
+    # Segment the transcript
+    segments = segment_transcript(transcript)
 
-        if relevant_segments:
-            print("Relevant segments found:")
-            for segment in relevant_segments:
-                print(f"\nSegment starting at {segment['start_time']} seconds (Duration: {segment['duration']} seconds)")
-                print(f"Relevance Score: {segment['similarity']:.3f}")
-                print(f"Text: {segment['text']}")
-        else:
-            print("No relevant segments found.")
+    # Detect transcript language
+    combined_text = ' '.join([entry['text'] for entry in transcript])
+    transcript_lang = detect_language(combined_text)
+    print(f"Transcript language detected: {transcript_lang}")
+
+    # Translate the user query to the transcript language if necessary
+    user_query_translated = (
+        translate_text(user_query, target_lang=transcript_lang) if transcript_lang != 'en' else user_query
+    )
+
+    # Filter relevant segments using untranslated transcript
+    keywords = extract_keywords(user_query_translated)
+    search_query = ' '.join(keywords)
+    potential_relevant_segments = find_all_relevant_segments(segments, search_query)
+
+    # Translate only the filtered segments to English for further processing
+    for segment in potential_relevant_segments:
+        translated_text = (
+            translate_text(segment['text'], target_lang='en') if transcript_lang != 'en' else segment['text']
+        )
+        segment['text'] = translated_text
+        relevant_segments.append(segment)
+
+    # Pass translated segments to Gemini for final relevance check
+    relevant_segments = query_batch(relevant_segments, user_query)
+    relevant_segments = sorted(relevant_segments, key=lambda x: x.get('similarity', 0), reverse=True)
+
+    if relevant_segments:
+        print("Relevant segments found:")
+        for segment in relevant_segments:
+            print(f"\nSegment starting at {segment['start_time']} seconds (Duration: {segment['duration']} seconds)")
+            print(f"Relevance Score: {segment['similarity']:.3f}")
+            print(f"Text: {segment['text']}")
     else:
-        print(transcript)
+        print("No relevant segments found.")
 
-    return relevant_segments if isinstance(relevant_segments, list) else []
+    return relevant_segments
+
+
 
 if __name__ == '__main__':
     application.run(debug=True, port=5000)

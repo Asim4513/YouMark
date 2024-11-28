@@ -15,7 +15,7 @@ This Flask application provides a powerful interface for extracting and processi
 1. **Clone the Repository**
 
     ```bash
-    git clone https://github.com/your-username/your-repository.git
+    git clone https://github.com/Asim4513/YouMark.git
     cd your-repository
     ```
 

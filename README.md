@@ -14,7 +14,6 @@ YouMark is a Flask-based API that processes YouTube video transcripts, cleans an
 
 ## Prerequisites
 - Python 3.8 or higher
-- YouTube Data API Key
 - Gemini AI API Key
 
 ---

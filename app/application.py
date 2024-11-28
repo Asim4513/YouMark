@@ -1,12 +1,7 @@
 from flask import Flask, jsonify, request
-from googleapiclient.discovery import build
 from youtube_transcript_api import YouTubeTranscriptApi
-from youtube_transcript_api._errors import TranscriptsDisabled
-import re
 import spacy
 from flask_cors import CORS
-import functools
-import requests
 from dotenv import load_dotenv
 import os
 import nltk
@@ -26,10 +21,6 @@ def home():
 
 # Load the NLP model from spaCy
 nlp = spacy.load("en_core_web_sm")
-
-
-api_key = os.getenv('YOUTUBE_API_KEY')
-youtube = build('youtube', 'v3', developerKey=api_key)
 
 genai.configure(api_key=os.getenv('GENAI_API_KEY'))
 translator = Translator()

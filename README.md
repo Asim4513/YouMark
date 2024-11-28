@@ -1,26 +1,65 @@
 # YouMark
 
-YouMark is a Flask-based API that processes YouTube video transcripts, cleans and refines user queries using Gemini AI, and identifies relevant segments from the transcript based on user-provided queries.
+This Flask application provides a powerful interface for extracting and processing YouTube video transcripts. Utilizing advanced NLP techniques and integration with several APIs, including the YouTube Transcript API, spaCy, Google's generative AI models, and translation services, this API can detect the language of transcripts, translate them, and smartly identify relevant segments based on user queries.
 
 ## Features
-- **Transcript Retrieval**: Fetch transcripts for YouTube videos using `youtube_transcript_api`.
-- **Query Refinement**: Cleans and refines user queries using the Gemini AI model.
-- **Segment Processing**: Processes video transcripts into lemmatized and cleaned text segments.
-- **Keyword Extraction**: Extracts keywords from user queries using SpaCy's NLP capabilities.
-- **Relevance Matching**: Identifies and ranks relevant transcript segments based on user queries.
-- **CORS Enabled**: Supports cross-origin requests for easy integration.
 
----
-
-## Prerequisites
-- Python 3.8 or higher
-- Gemini AI API Key
-
----
+- Fetch and process YouTube video transcripts.
+- Language detection and automatic translation to handle non-English transcripts.
+- Enhanced query processing with synonyms expansion and Gemini model integration for relevance checking.
+- Advanced text analysis using spaCy for keyword extraction and text lemmatization.
+- Easy integration with front-end applications through RESTful API endpoints.
 
 ## Installation
 
-1. **Clone the Repository**:
-   ```bash
-   git clone https://github.com/<your-repo-name>/YouMark.git
-   cd YouMark
+1. **Clone the Repository**
+
+    ```bash
+    git clone https://github.com/your-username/your-repository.git
+    cd your-repository
+    ```
+
+2. **Set up a Virtual Environment (Optional but Recommended)**
+
+    ```bash
+    python -m venv venv
+    source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+    ```
+
+3. **Install Dependencies**
+
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+4. **Environment Variables**
+
+    Copy the `.env.example` file to `.env` and modify it to include your API keys and other configurations:
+
+    ```plaintext
+    GENAI_API_KEY=your_genai_api_key_here
+    PORT=8080
+    ```
+
+5. **Run the Application**
+
+    ```bash
+    python application.py
+    ```
+
+## Usage
+
+The API provides several endpoints:
+
+- `GET /` - Welcome route to check if the API is running.
+- `POST /process_video` - Process a YouTube video by video ID and a user query to find relevant transcript segments.
+- `POST /get_segments` - Example endpoint for testing transcript processing.
+
+### Example Request
+
+Using `curl` to make requests to the API:
+
+```bash
+curl -X POST http://localhost:8080/process_video \
+    -H 'Content-Type: application/json' \
+    -d '{"video_id": "dQw4w9WgXcQ", "query": "key concepts in video"}'

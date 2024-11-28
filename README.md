@@ -16,7 +16,7 @@ This Flask application provides a powerful interface for extracting and processi
 
     ```bash
     git clone https://github.com/Asim4513/YouMark.git
-    cd your-repository
+    cd YouMark
     ```
 
 2. **Set up a Virtual Environment (Optional but Recommended)**

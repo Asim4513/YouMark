@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 // Start simulating the progress bar fill-up
                 simulateProgressBar(progressBar);
 
-                fetch('http://localhost:5000/process_video', {
+                fetch('http://localhost:8080/process_video', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -107,7 +107,7 @@ function processVideo(videoId) {
     // Start simulating the progress bar fill-up
     simulateProgressBar(progressBar);
 
-    fetch('http://localhost:5000/process_video', {
+    fetch('http://localhost:8080/process_video', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

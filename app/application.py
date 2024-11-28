@@ -326,9 +326,11 @@ def process_video_function(video_id, user_query):
     else:
         print("No relevant segments found.")
 
+    print(f"Relevant fetched: {relevant_segments}", flush=True)
     return relevant_segments
 
 
 
 if __name__ == '__main__':
-    application.run(debug=True, port=5000)
+    port = int(os.getenv('PORT', 8080))
+    application.run(host='0.0.0.0', port=port, debug=True)

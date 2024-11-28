@@ -49,11 +49,41 @@ This Flask application provides a powerful interface for extracting and processi
 
 ## Usage
 
-The API provides several endpoints:
+## Getting your Gemini AI API Key
 
-- `GET /` - Welcome route to check if the API is running.
-- `POST /process_video` - Process a YouTube video by video ID and a user query to find relevant transcript segments.
-- `POST /get_segments` - Example endpoint for testing transcript processing.
+1. **Visit the URL**
+
+    ```bash
+    https://aistudio.google.com/app/apikey
+    ```
+
+2. **Get an API Key once you login to your Google account**
+
+    ```bash
+    python -m venv venv
+    ```
+
+3. **Install Dependencies**
+
+    ```bash
+    cd app
+    pip install -r requirements.txt
+    ```
+
+4. **Environment Variables**
+
+    Replace the GenAI Key in the .env file in YouMark/app/.env with your GenAI API Key:
+
+    ```plaintext
+    GENAI_API_KEY=your_genai_api_key_here
+    ```
+
+5. **Run the Application**
+
+    ```bash
+    python application.py
+    ```
+
 
 ### Example Request
 

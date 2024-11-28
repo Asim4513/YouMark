@@ -29,16 +29,16 @@ This Flask application provides a powerful interface for extracting and processi
 3. **Install Dependencies**
 
     ```bash
+    cd app
     pip install -r requirements.txt
     ```
 
 4. **Environment Variables**
 
-    Copy the `.env.example` file to `.env` and modify it to include your API keys and other configurations:
+    Replace the GenAI Key in the .env file in YouMark/app/.env with your GenAI API Key:
 
     ```plaintext
     GENAI_API_KEY=your_genai_api_key_here
-    PORT=8080
     ```
 
 5. **Run the Application**

@@ -37,7 +37,13 @@ This Flask application provides a powerful interface for extracting and processi
     pip install -r requirements.txt
     ```
 
-4. **Environment Variables**
+4. **Additional Dependencies**
+
+    ```bash
+    python -m nltk.downloader wordnet
+    ```
+    
+5. **Environment Variables**
 
     Replace the GenAI Key in the .env file in YouMark/app/.env with your GenAI API Key:
 
@@ -45,7 +51,7 @@ This Flask application provides a powerful interface for extracting and processi
     GENAI_API_KEY=your_genai_api_key_here
     ```
 
-5. **Run the Application**
+6. **Run the Application**
 
     ```bash
     python application.py

@@ -59,9 +59,18 @@ This Flask application provides a powerful interface for extracting and processi
 
 2. **Get an API Key once you login to your Google account**
 
-    ```bash
-    python -m venv venv
-    ```
+![Local Image](./Instruction Pictures/instruction 1.png)
+
+Click on Create an API Key
+
+![Local Image](./Instruction Pictures/instruction 2.png)
+
+Paste the API Key into the .env Folder : YouMark/app/.env
+
+![Local Image](./Instruction Pictures/instruction 3.png)
+
+
+
 
 3. **Install Dependencies**
 

@@ -59,46 +59,31 @@ This Flask application provides a powerful interface for extracting and processi
 
 2. **Get an API Key once you login to your Google account**
 
-![Local Image](./Instruction Pictures/instruction 1.png)
+![Local Image](./InstructionPictures/instruction1.png)
 
 Click on Create an API Key
 
-![Local Image](./Instruction Pictures/instruction 2.png)
+![Local Image](./InstructionPictures/instruction2.png)
 
 Paste the API Key into the .env Folder : YouMark/app/.env
 
-![Local Image](./Instruction Pictures/instruction 3.png)
+![Local Image](./InstructionPictures/instruction3.png)
 
 
 
 
-3. **Install Dependencies**
+3. **Open the Chrome Browser and go to settings and Manage extensions and Turn on Developer Mode**
 
-    ```bash
-    cd app
-    pip install -r requirements.txt
-    ```
-
-4. **Environment Variables**
-
-    Replace the GenAI Key in the .env file in YouMark/app/.env with your GenAI API Key:
-
-    ```plaintext
-    GENAI_API_KEY=your_genai_api_key_here
-    ```
-
-5. **Run the Application**
-
-    ```bash
-    python application.py
-    ```
+![Local Image](./InstructionPictures/instruction4.png)
 
 
-### Example Request
+4. **Select Load Unpacked ad select the Folder YTExtension**
 
-Using `curl` to make requests to the API:
 
-```bash
-curl -X POST http://localhost:8080/process_video \
-    -H 'Content-Type: application/json' \
-    -d '{"video_id": "dQw4w9WgXcQ", "query": "key concepts in video"}'
+5. **Visit Youtube and go to your Favourite Video to Test the Extension out!**
+
+![Local Image](./InstructionPictures/instruction5.png)
+
+
+
+### Key Take-Away

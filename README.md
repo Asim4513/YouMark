@@ -81,7 +81,7 @@ Paste the API Key into the .env Folder : YouMark/app/.env
 ![Local Image](./InstructionPictures/instruction4.png)
 
 
-4. **Select Load Unpacked ad select the Folder YTExtension**
+4. **Select Load Unpacked and select the Folder YTExtension**
 
 
 5. **Visit Youtube and go to your Favourite Video to Test the Extension out!**
@@ -89,5 +89,3 @@ Paste the API Key into the .env Folder : YouMark/app/.env
 ![Local Image](./InstructionPictures/instruction5.png)
 
 
-
-### Key Take-Away

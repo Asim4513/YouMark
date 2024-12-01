@@ -4,7 +4,7 @@
 
 This Flask application provides a powerful interface for extracting and processing YouTube video transcripts. Utilizing advanced NLP techniques and integration with several APIs, including the YouTube Transcript API, spaCy, Google's generative AI models, and translation services, this API can detect the language of transcripts, translate them, and smartly identify relevant segments based on user queries.
 
-![Local Image](./InstructionPictures/instruction6.png)
+<img src="./InstructionPictures/instruction6.jpg" alt="Local Image" width="300" height="200">
 
 ## Features
 

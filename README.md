@@ -8,7 +8,7 @@ This Flask application provides a powerful interface for extracting and processi
 - Language detection and automatic translation to handle non-English transcripts.
 - Enhanced query processing with synonyms expansion and Gemini model integration for relevance checking.
 - Advanced text analysis using spaCy for keyword extraction and text lemmatization.
-- Easy integration with front-end applications through RESTful API endpoints.
+- Easy integration with front-end applications through RESTful API endpoints to highlight relevant segments in the Youtube video.
 
 ## Installation
 
